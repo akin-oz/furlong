@@ -17,24 +17,27 @@ const palette = {
   // Warm paper neutrals — the editorial foundation
   paper: {
     base:    '#F4F1EB',  // page background
-    rowAlt:  '#F7F4EE',  // alternating row background
-    subtle:  '#ECE7DD',  // table headers, hover state
-    rule:    '#D9D3C6',  // borders, dividers, finish line
-    muted:   '#6E6A62',  // secondary text, labels
+    base2:   '#EDE8DD',  // hover state for rows
+    rowAlt:  '#EFEAE0',  // alternating row background
+    subtle:  '#E8E2D4',  // hairline rules between rows
+    rule:    '#D8D2C4',  // borders, dividers
+    muted:   '#807A6E',  // secondary text, labels
+    muted2:  '#A7A095',  // tertiary text
     ink:     '#1A1815',  // primary text, dark surfaces
+    ink2:    '#3A3530',  // secondary ink (numerics)
   },
 
-  // Brand accent — terracotta
+  // Brand accent — vermillion
   brand: {
-    accent: '#C8472B',   // active states, live indicator, primary brand
+    accent: '#B5462A',   // active states, live indicator, finish line
   },
 
   // Lane colors — 20 unique hues, muted editorial palette
   lane: [
-    '#C8472B', '#2F5D8C', '#D9A441', '#3F7F5D', '#7B4A8E',
+    '#B5462A', '#2F5D8C', '#C49B3F', '#3F7F5D', '#7B4A8E',
     '#A33A4A', '#1F6F8B', '#B86B26', '#4A6B3A', '#5B3A8E',
-    '#8E2A4F', '#0F4C5C', '#C49B3F', '#2B7A4B', '#6E3F8E',
-    '#A04545', '#356E9A', '#A37734', '#3D6B45', '#5C4E8E',
+    '#8E2A4F', '#0F4C5C', '#A37734', '#2B7A4B', '#6E3F8E',
+    '#A04545', '#356E9A', '#C66E3F', '#3D6B45', '#5C4E8E',
   ],
 } as const
 
@@ -45,14 +48,17 @@ const palette = {
 export const tokens = {
   text: {
     primary:   palette.paper.ink,
-    secondary: palette.paper.muted,
+    secondary: palette.paper.ink2,
+    tertiary:  palette.paper.muted,
+    quiet:     palette.paper.muted2,
     inverse:   palette.paper.base,
     accent:    palette.brand.accent,
   },
 
   surface: {
     base:     palette.paper.base,    // page background
-    raised:   palette.paper.base,    // panels (same as base, separated by border)
+    raised:   palette.paper.base,    // columns (flat — no panel borders)
+    hover:    palette.paper.base2,   // row hover
     sunken:   palette.paper.subtle,  // table headers
     rowAlt:   palette.paper.rowAlt,
     inverse:  palette.paper.ink,     // primary buttons, dark surfaces

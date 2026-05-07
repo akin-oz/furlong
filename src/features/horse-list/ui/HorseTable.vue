@@ -5,69 +5,42 @@ const horseStore = useHorseStore()
 </script>
 
 <template>
-  <div class="horse-table panel">
-    <div class="panel-head">
-      <div>
-        <div class="ph-eyebrow">
-          Stable
-        </div>
-        <div class="ph-title">
-          All horses
-        </div>
-        <div class="ph-sub">
-          {{ horseStore.horses.length }} entries
-        </div>
+  <section class="col">
+    <div class="col-head">
+      <div class="col-title">
+        Stable
+      </div>
+      <div class="col-eyebrow">
+        01 — {{ horseStore.horses.length }} horses
       </div>
     </div>
 
     <div class="roster-table">
       <div class="roster-head">
-        <div />
-        <div>Name</div>
-        <div class="num">
-          Age
-        </div>
-        <div class="num">
-          Cond.
-        </div>
-        <div class="num">
-          Stam.
-        </div>
-        <div class="num">
-          Accl.
-        </div>
+        <span>Name</span>
+        <span class="num">Age</span>
+        <span class="num">Cond.</span>
+        <span class="num">Stam.</span>
+        <span class="num">Accl.</span>
+        <span />
       </div>
-
       <div class="roster-body">
         <div
-          v-for="(horse, i) in horseStore.horses"
+          v-for="horse in horseStore.horses"
           :key="horse.id"
           class="roster-row"
         >
-          <div class="roster-num">
-            {{ String(i + 1).padStart(2, '0') }}
-          </div>
-          <div class="roster-name">
-            <span
-              class="swatch"
-              :style="{ background: horse.color }"
-            />
-            <span class="ellip">{{ horse.name }}</span>
-          </div>
-          <div class="num mono">
-            {{ horse.age }}
-          </div>
-          <div class="num mono">
-            {{ horse.condition }}
-          </div>
-          <div class="num mono">
-            {{ horse.stamina }}
-          </div>
-          <div class="num mono">
-            {{ horse.acceleration }}
-          </div>
+          <span class="name ellip">{{ horse.name }}</span>
+          <span class="num">{{ horse.age }}</span>
+          <span class="num">{{ horse.condition }}</span>
+          <span class="num">{{ horse.stamina }}</span>
+          <span class="num">{{ horse.acceleration }}</span>
+          <span
+            class="swatch"
+            :style="{ background: horse.color }"
+          />
         </div>
       </div>
     </div>
-  </div>
+  </section>
 </template>

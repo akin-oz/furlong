@@ -12,8 +12,6 @@ const raceStore = useRaceStore()
 const trackRef = ref<InstanceType<typeof RaceTrack> | null>(null)
 
 function onGenerate() {
-  // Per assumption (pending Berfu): horses persist, only schedule regenerates.
-  // If response says "regenerate horses too": call horseStore.regenerate() first.
   raceStore.setSchedule(buildSchedule(horseStore.horses))
 }
 
@@ -34,25 +32,7 @@ function onSkip() {
   <div class="app">
     <header class="topbar">
       <div class="brand">
-        <div class="brand-mark" :style="{ background: 'var(--accent)' }" />
-        <div>
-          <div class="brand-title">Furlong</div>
-          <div class="brand-sub">Racing Simulation</div>
-        </div>
-      </div>
-
-      <div class="meta">
-        <div class="meta-cell">
-          <span class="meta-label">Round</span>
-          <span class="meta-value mono">
-            {{ String((raceStore.currentRoundIndex ?? 0) + 1).padStart(2, '0') }}
-            / 06
-          </span>
-        </div>
-        <div class="meta-cell">
-          <span class="meta-label">Status</span>
-          <span class="meta-value">{{ raceStore.status }}</span>
-        </div>
+        Furlong
       </div>
 
       <div class="actions">
@@ -61,21 +41,21 @@ function onSkip() {
           :disabled="!raceStore.canGenerate"
           @click="onGenerate"
         >
-          Generate program
+          Generate Program
         </button>
         <button
           class="btn"
           :disabled="!raceStore.canSkip"
           @click="onSkip"
         >
-          Skip round
+          Skip Round
         </button>
         <button
           class="btn btn-primary"
           :disabled="!(raceStore.canStart || raceStore.canPause)"
           @click="onStartPause"
         >
-          {{ raceStore.status === 'running' ? 'Pause' : 'Start' }} race
+          {{ raceStore.status === 'running' ? 'Pause' : 'Start' }} / Resume
         </button>
       </div>
     </header>
@@ -83,10 +63,10 @@ function onSkip() {
     <main class="grid">
       <HorseTable />
       <RaceTrack ref="trackRef" />
-      <div class="right-stack">
+      <aside class="side">
         <ProgramPanel />
         <ResultsPanel />
-      </div>
+      </aside>
     </main>
   </div>
 </template>

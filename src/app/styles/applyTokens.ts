@@ -2,16 +2,19 @@ import { tokens, typography, spacing, layout, motion } from '@shared/config'
 
 const cssVars: Record<string, string> = {
   '--paper': tokens.surface.base,
+  '--paper-2': tokens.surface.hover,
   '--ink': tokens.text.primary,
-  '--muted': tokens.text.secondary,
+  '--ink-2': tokens.text.secondary,
+  '--muted': tokens.text.tertiary,
+  '--muted-2': tokens.text.quiet,
   '--rule': tokens.border.default,
   '--subtle': tokens.border.subtle,
   '--row-alt': tokens.surface.rowAlt,
   '--accent': tokens.text.accent,
 
-  '--display-font': typography.family.display,
-  '--ui-font': typography.family.body,
-  '--mono-font': typography.family.mono,
+  '--display': typography.family.display,
+  '--ui': typography.family.body,
+  '--mono': typography.family.mono,
 
   '--row-pad': layout.rowPadding,
   '--lane-h': layout.laneHeight,

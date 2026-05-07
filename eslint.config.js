@@ -1,5 +1,6 @@
 import { defineConfig } from 'eslint/config'
 import js from '@eslint/js'
+import globals from 'globals'
 import tseslint from 'typescript-eslint'
 import pluginVue from 'eslint-plugin-vue'
 import boundariesPlugin from 'eslint-plugin-boundaries'
@@ -20,6 +21,12 @@ export default defineConfig([
   js.configs.recommended,
   tseslint.configs.recommended,
   pluginVue.configs['flat/recommended'],
+
+  {
+    languageOptions: {
+      globals: { ...globals.browser },
+    },
+  },
 
   {
     plugins: {

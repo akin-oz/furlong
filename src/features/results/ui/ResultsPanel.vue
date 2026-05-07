@@ -1,25 +1,33 @@
 <script setup lang="ts">
 import { useRaceStore } from '@entities/race'
+import { RACING_CONFIG } from '@shared/config'
 
 const raceStore = useRaceStore()
+
+const POS_LABELS = ['1st', '2nd', '3rd'] as const
+
+function formatFinishTime(tick: number): string {
+  const seconds = (tick * RACING_CONFIG.engine.tickIntervalMs) / 1000
+  const m = Math.floor(seconds / 60)
+  const s = (seconds % 60).toFixed(2).padStart(5, '0')
+  return `${m}:${s}`
+}
 </script>
 
 <template>
-  <div class="results-panel panel">
-    <div class="panel-head">
-      <div>
-        <div class="ph-eyebrow">
-          Results
-        </div>
-        <div class="ph-title">
-          Settled rounds
-        </div>
+  <section class="col">
+    <div class="col-head">
+      <div class="col-title">
+        Results
+      </div>
+      <div class="col-eyebrow">
+        04 — {{ raceStore.results.length }} settled
       </div>
     </div>
 
-    <div class="results-list">
+    <div class="res-list">
       <template v-if="raceStore.results.length === 0">
-        <div class="results-empty">
+        <div class="res-empty">
           No rounds completed yet.
         </div>
       </template>
@@ -28,40 +36,43 @@ const raceStore = useRaceStore()
         v-else
         name="result"
         tag="div"
-        class="results-stack"
       >
         <div
           v-for="result in raceStore.results"
           :key="result.roundId"
-          class="result-card"
+          class="res-card"
         >
-          <div class="result-head">
-            <div class="result-round mono">
-              R{{ String(result.roundId).padStart(2, '0') }}
+          <div class="res-head">
+            <div class="res-title">
+              Round {{ String(result.roundId).padStart(2, '0') }} — {{ result.distance }} m
             </div>
-            <div class="result-distance mono">
-              {{ result.distance }} m
+            <div class="res-meta">
+              {{ formatFinishTime(result.positions[0]?.finishedAtTick ?? 0) }}
             </div>
           </div>
-
           <div class="podium">
             <div
-              v-for="position in result.positions.slice(0, 3)"
+              v-for="(position, i) in result.positions.slice(0, 3)"
               :key="position.horseId"
               class="podium-row"
+              :class="`p${i + 1}`"
             >
-              <span class="pos-num mono">{{ position.position }}</span>
-              <span
-                class="swatch sm"
-                :style="{ background: position.horseColor }"
-              />
-              <span class="pos-name ellip">{{ position.horseName }}</span>
+              <div class="podium-pos">
+                {{ POS_LABELS[i] }}
+              </div>
+              <div class="podium-name">
+                <span
+                  class="swatch"
+                  :style="{ background: position.horseColor, justifySelf: 'auto' }"
+                />
+                <span class="ellip">{{ position.horseName }}</span>
+              </div>
             </div>
           </div>
         </div>
       </TransitionGroup>
     </div>
-  </div>
+  </section>
 </template>
 
 <style scoped>

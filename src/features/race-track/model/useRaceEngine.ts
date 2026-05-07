@@ -167,5 +167,6 @@ export function useRaceEngine(options: UseRaceEngineOptions) {
     skipRound,
     horseProgress,
     isRunning,
+    tickCount,
   }
 }
