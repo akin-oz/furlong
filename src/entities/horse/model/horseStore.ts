@@ -10,6 +10,14 @@ export const useHorseStore = defineStore('horse', () => {
     horses.value = generateHorses()
   }
 
+  /**
+   * Replace the roster with an explicit set of horses.
+   * Used by stories and fixture-driven tests to inject deterministic data.
+   */
+  function setHorses(next: readonly Horse[]): void {
+    horses.value = next
+  }
+
   function getById(id: number): Horse | undefined {
     return horses.value.find((h) => h.id === id)
   }
@@ -17,6 +25,7 @@ export const useHorseStore = defineStore('horse', () => {
   return {
     horses: readonly(horses),
     regenerate,
+    setHorses,
     getById,
   }
 })

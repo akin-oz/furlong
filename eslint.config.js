@@ -93,7 +93,7 @@ export default defineConfig([
   },
 
   {
-    files: ['tests/**/*.ts', '**/*.stories.ts', '**/*.spec.ts'],
+    files: ['tests/**/*.ts', '**/*.stories.ts', '**/*.spec.ts', 'src/shared/test/**/*.ts'],
     rules: {
       'boundaries/element-types': 'off',
       'boundaries/no-private': 'off',
