@@ -7,9 +7,8 @@ const meta: Meta<typeof HorseTable> = {
   title: 'Features/Horse List/HorseTable',
   component: HorseTable,
   decorators: [
-    (story) => ({
-      components: { Story: story },
-      template: `<div style="width: 320px; height: 480px; padding: 24px; background: var(--paper); display: flex;"><Story /></div>`,
+    () => ({
+      template: `<div style="width: 320px; height: 480px; padding: 24px; background: var(--paper); display: flex;"><story /></div>`,
     }),
   ],
 }

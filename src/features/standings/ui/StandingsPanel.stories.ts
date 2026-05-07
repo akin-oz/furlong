@@ -6,9 +6,8 @@ const meta: Meta<typeof StandingsPanel> = {
   title: 'Features/Standings/StandingsPanel',
   component: StandingsPanel,
   decorators: [
-    (story) => ({
-      components: { Story: story },
-      template: `<div style="width: 360px; padding: 24px; background: var(--paper); display: flex;"><Story /></div>`,
+    () => ({
+      template: `<div style="width: 360px; padding: 24px; background: var(--paper); display: flex;"><story /></div>`,
     }),
   ],
 }

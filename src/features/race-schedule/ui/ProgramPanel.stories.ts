@@ -6,9 +6,8 @@ const meta: Meta<typeof ProgramPanel> = {
   title: 'Features/Race Schedule/ProgramPanel',
   component: ProgramPanel,
   decorators: [
-    (story) => ({
-      components: { Story: story },
-      template: `<div style="width: 320px; padding: 24px; background: var(--paper); display: flex;"><Story /></div>`,
+    () => ({
+      template: `<div style="width: 320px; padding: 24px; background: var(--paper); display: flex;"><story /></div>`,
     }),
   ],
 }

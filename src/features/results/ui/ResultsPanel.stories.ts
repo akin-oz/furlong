@@ -6,9 +6,8 @@ const meta: Meta<typeof ResultsPanel> = {
   title: 'Features/Results/ResultsPanel',
   component: ResultsPanel,
   decorators: [
-    (story) => ({
-      components: { Story: story },
-      template: `<div style="width: 340px; padding: 24px; background: var(--paper); display: flex;"><Story /></div>`,
+    () => ({
+      template: `<div style="width: 340px; padding: 24px; background: var(--paper); display: flex;"><story /></div>`,
     }),
   ],
 }

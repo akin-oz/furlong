@@ -12,11 +12,10 @@ const meta: Meta<typeof HorseLane> = {
     laneNumber: { control: { type: 'number', min: 1, max: 10 } },
   },
   decorators: [
-    (story) => ({
-      components: { Story: story },
+    () => ({
       template: `
         <div style="width: 600px; height: 46px; padding: 0 60px 0 0; background: var(--paper);">
-          <Story />
+          <story />
         </div>
       `,
     }),

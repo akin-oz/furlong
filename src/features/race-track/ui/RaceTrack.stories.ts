@@ -6,9 +6,8 @@ const meta: Meta<typeof RaceTrack> = {
   title: 'Features/Race Track/RaceTrack',
   component: RaceTrack,
   decorators: [
-    (story) => ({
-      components: { Story: story },
-      template: `<div style="width: 880px; height: 640px; padding: 24px; background: var(--paper); display: flex;"><Story /></div>`,
+    () => ({
+      template: `<div style="width: 880px; height: 640px; padding: 24px; background: var(--paper); display: flex;"><story /></div>`,
     }),
   ],
 }
