@@ -6,6 +6,7 @@ import { HorseTable } from '@features/horse-list'
 import { ProgramPanel, buildSchedule } from '@features/race-schedule'
 import { RaceTrack } from '@features/race-track'
 import { ResultsPanel } from '@features/results'
+import { StandingsPanel } from '@features/standings'
 
 const horseStore = useHorseStore()
 const raceStore = useRaceStore()
@@ -66,6 +67,7 @@ function onSkip() {
       <aside class="side">
         <ProgramPanel />
         <ResultsPanel />
+        <StandingsPanel />
       </aside>
     </main>
   </div>

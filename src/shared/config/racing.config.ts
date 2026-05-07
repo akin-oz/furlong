@@ -75,6 +75,19 @@ export const RACING_CONFIG = {
   flow: {
     interRoundDelayMs: 1500,
   },
+
+  // ─── Overall standings ───────────────────────────────────────
+  // Points-based championship across all rounds.
+  // See ADR 0011 (Overall champion determination).
+  standings: {
+    // Position points before multiplier: 1st place = 10, 10th place = 1
+    positionPoints: (position: number) => 11 - position,
+
+    // Distance multiplier — rounds with distance ≥ this threshold get the boost
+    distanceMultiplierThreshold: 1800,
+    distanceMultiplierBoost: 2.0,
+    distanceMultiplierBase: 1.0,
+  },
 } as const
 
 export type RacingConfig = typeof RACING_CONFIG
