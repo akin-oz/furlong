@@ -1,19 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400&family=Fraunces:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Spectral:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
-:root {
-  --paper: #F4F1EB;
-  --ink: #1A1815;
-  --muted: #6E6A62;
-  --rule: #D9D3C6;
-  --subtle: #ECE7DD;
-  --row-alt: #F7F4EE;
-  --accent: #C8472B;
-  --display-font: "Newsreader", "Times New Roman", serif;
-  --ui-font: "Inter", system-ui, sans-serif;
-  --mono-font: "JetBrains Mono", ui-monospace, monospace;
-  --row-pad: 9px 14px;
-  --lane-h: 46px;
-}
+/*
+ * Design tokens (--paper, --ink, --display-font, etc.) are applied to :root
+ * at runtime by src/app/styles/applyTokens.ts, sourced from src/shared/config/tokens.ts.
+ */
 
 * { box-sizing: border-box; }
 html, body, #root { height: 100%; }
@@ -35,7 +25,7 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  max-width: 1680px;
+  max-width: var(--app-max-width);
   margin: 0 auto;
   padding: 18px 22px 22px;
   gap: 14px;
