@@ -13,6 +13,8 @@ const standings = computed(() =>
 )
 
 const totalRounds = RACING_CONFIG.rounds.length
+const podiumSize = RACING_CONFIG.display.podiumSize
+const podiumLabels = RACING_CONFIG.display.podiumLabels
 
 const isChampionship = computed(
   () => raceStore.results.length === totalRounds,
@@ -58,7 +60,7 @@ function formatPoints(points: number): string {
         <span>Rank</span>
         <span />
         <span>Horse</span>
-        <span class="standings-head-finishes">Top 3 finishes</span>
+        <span class="standings-head-finishes">Top {{ podiumSize }} finishes</span>
         <span class="num">Pts</span>
       </div>
 
@@ -72,7 +74,7 @@ function formatPoints(points: number): string {
             :key="entry.horse.id"
             class="standing-row"
             :class="{
-              podium: isChampionship && entry.rank <= 3,
+              podium: isChampionship && entry.rank <= podiumSize,
               zero: entry.totalPoints === 0,
             }"
           >
@@ -94,21 +96,21 @@ function formatPoints(points: number): string {
                   class="finish-chip gold"
                   :title="`Won ${entry.firsts} race${entry.firsts === 1 ? '' : 's'}`"
                 >
-                  {{ entry.firsts }}× 1st
+                  {{ entry.firsts }}× {{ podiumLabels[0] }}
                 </span>
                 <span
                   v-if="entry.seconds > 0"
                   class="finish-chip silver"
-                  :title="`Finished 2nd in ${entry.seconds} race${entry.seconds === 1 ? '' : 's'}`"
+                  :title="`Finished ${podiumLabels[1]} in ${entry.seconds} race${entry.seconds === 1 ? '' : 's'}`"
                 >
-                  {{ entry.seconds }}× 2nd
+                  {{ entry.seconds }}× {{ podiumLabels[1] }}
                 </span>
                 <span
                   v-if="entry.thirds > 0"
                   class="finish-chip bronze"
-                  :title="`Finished 3rd in ${entry.thirds} race${entry.thirds === 1 ? '' : 's'}`"
+                  :title="`Finished ${podiumLabels[2]} in ${entry.thirds} race${entry.thirds === 1 ? '' : 's'}`"
                 >
-                  {{ entry.thirds }}× 3rd
+                  {{ entry.thirds }}× {{ podiumLabels[2] }}
                 </span>
               </template>
             </span>

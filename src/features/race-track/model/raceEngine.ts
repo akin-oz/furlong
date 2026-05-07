@@ -63,13 +63,13 @@ export function computeTick(input: TickInput): {
   // 2. Final-stretch burst (high-stamina horses kick at the end)
   let hasBursted = state.hasBursted
   if (progress > e.burstThreshold && !state.hasBursted) {
-    const burstMultiplier = 1 + (horse.stamina / 100) * e.burstStaminaFactor
+    const burstMultiplier = 1 + (horse.stamina / e.attributeScale) * e.burstStaminaFactor
     baseSpeed *= burstMultiplier
     hasBursted = true
   }
 
   // 3. Anaerobic energy depletion (high-acceleration horses tire faster)
-  const tickCost = e.anaerobicTickCost * (horse.acceleration / 100)
+  const tickCost = e.anaerobicTickCost * (horse.acceleration / e.attributeScale)
   const newAnaerobicEnergy = Math.max(0, state.anaerobicEnergy - tickCost)
 
   // 4. Fatigue penalty when anaerobic energy is critically low
@@ -99,11 +99,12 @@ export function computeTick(input: TickInput): {
 // ─────────────────────────────────────────────────────────────────
 
 export function createInitialState(horse: Horse): HorseRaceState {
+  const e = RACING_CONFIG.engine
   return {
     horseId: horse.id,
     progress: 0,
-    speed: horse.condition * RACING_CONFIG.engine.conditionWeight,
-    anaerobicEnergy: 1,
+    speed: horse.condition * e.conditionWeight,
+    anaerobicEnergy: e.maxAnaerobicEnergy,
     hasBursted: false,
     finishedAtTick: null,
   }
@@ -117,15 +118,11 @@ export function createInitialState(horse: Horse): HorseRaceState {
  * Convert tick speed to a normalized progress increment.
  *
  * Speeds are in arbitrary "speed units"; we normalize so a typical condition-50
- * horse covers the full track in a reasonable wall-clock time.
- *
- * The normalization constant is calibrated empirically against the tick rate
- * and round distances in RACING_CONFIG.
+ * horse covers the full track in a reasonable wall-clock time. Calibration
+ * constants live in RACING_CONFIG.engine.
  */
 export function speedToProgressDelta(speed: number, distance: number): number {
-  // Empirical constant: a horse with average attributes (~50 each) finishes
-  // a 1600m round in ~250 ticks at 50ms each = ~12.5s wall clock.
-  const PROGRESS_PER_SPEED_UNIT = 0.0008
-  const distanceFactor = 1600 / distance  // longer races = slower progress per tick
-  return speed * PROGRESS_PER_SPEED_UNIT * distanceFactor
+  const { progressPerSpeedUnit, referenceDistance } = RACING_CONFIG.engine
+  const distanceFactor = referenceDistance / distance  // longer races = slower per-tick
+  return speed * progressPerSpeedUnit * distanceFactor
 }

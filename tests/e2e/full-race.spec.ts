@@ -1,4 +1,7 @@
 import { test, expect, type Page } from '@playwright/test'
+import { RACING_CONFIG } from '@shared/config'
+import { padRoundId } from '@shared/lib/format'
+import { TEST_CONFIG } from '../config/test.config'
 
 /**
  * End-to-end coverage for the full championship flow.
@@ -8,6 +11,16 @@ import { test, expect, type Page } from '@playwright/test'
  * the suite stays fast.
  */
 
+const TOTAL_ROUNDS = RACING_CONFIG.rounds.length
+const TOTAL_HORSES = RACING_CONFIG.horses.totalCount
+const HORSES_PER_ROUND = RACING_CONFIG.horses.perRound
+const PODIUM_SIZE = RACING_CONFIG.display.podiumSize
+const ROUND_DISTANCES = RACING_CONFIG.rounds.map((r) => r.distance)
+const FIRST_ROUND_LABEL = padRoundId(RACING_CONFIG.rounds[0]!.id)
+const FIRST_ROUND_DISTANCE_LABEL = `${RACING_CONFIG.rounds[0]!.distance} m`
+const PER_ROUND_TIMEOUT = TEST_CONFIG.e2e.perRoundTimeoutMs
+const TRANSITION_TIMEOUT = TEST_CONFIG.e2e.transitionTimeoutMs
+
 const SELECTORS = {
   generate: 'button:has-text("Generate Program")',
   startResume: 'button:has-text("Start")',
@@ -15,30 +28,32 @@ const SELECTORS = {
   skip: 'button:has-text("Skip Round")',
   trackPlaceholder: '.track-placeholder',
   programRow: '.prog-row',
+  programDist: '.prog-row .prog-dist',
   resultCard: '.res-card',
   standingRow: '.standing-row',
   standingPodium: '.standing-row.podium',
+  standingPodiumRank: '.standing-row.podium .standing-rank',
   lane: '.lane',
   trackTitle: '.track-col .col-title',
   resultsEyebrow: 'section.col:has(.col-title:has-text("Results")) .col-eyebrow',
   championshipEyebrow: 'section.col:has(.col-title:has-text("Championship")) .col-eyebrow',
   programLiveRow: '.prog-row.live',
-  finishLabel: '.finish-label',
 } as const
 
 async function generateProgram(page: Page): Promise<void> {
   await page.locator(SELECTORS.generate).click()
-  await expect(page.locator(SELECTORS.programRow)).toHaveCount(6)
+  await expect(page.locator(SELECTORS.programRow)).toHaveCount(TOTAL_ROUNDS)
 }
 
 async function skipNextRound(page: Page): Promise<void> {
-  // Skip is only enabled while the round is running or paused.
-  await expect(page.locator(SELECTORS.skip)).toBeEnabled()
+  await expect(page.locator(SELECTORS.skip)).toBeEnabled({ timeout: TRANSITION_TIMEOUT })
   await page.locator(SELECTORS.skip).click()
 }
 
 async function waitForRoundCount(page: Page, n: number): Promise<void> {
-  await expect(page.locator(SELECTORS.resultCard)).toHaveCount(n, { timeout: 10_000 })
+  await expect(page.locator(SELECTORS.resultCard)).toHaveCount(n, {
+    timeout: PER_ROUND_TIMEOUT,
+  })
 }
 
 test.describe('Furlong dashboard — full championship flow', () => {
@@ -48,12 +63,10 @@ test.describe('Furlong dashboard — full championship flow', () => {
     await expect(page.locator(SELECTORS.trackPlaceholder)).toBeVisible()
     await expect(page.locator(SELECTORS.trackPlaceholder)).toContainText('Generate a program')
 
-    // Programme list is empty.
     await expect(page.locator(SELECTORS.programRow)).toHaveCount(0)
     await expect(page.locator(SELECTORS.resultCard)).toHaveCount(0)
     await expect(page.locator(SELECTORS.standingRow)).toHaveCount(0)
 
-    // Generate is enabled, Skip and Start are disabled in idle.
     await expect(page.locator(SELECTORS.generate)).toBeEnabled()
     await expect(page.locator(SELECTORS.skip)).toBeDisabled()
   })
@@ -62,70 +75,50 @@ test.describe('Furlong dashboard — full championship flow', () => {
     await page.goto('/')
     await generateProgram(page)
 
-    // 6 programme rows with the expected distance sequence.
-    const distances = (await page.locator('.prog-row .prog-dist').allTextContents()).map(
+    const distances = (await page.locator(SELECTORS.programDist).allTextContents()).map(
       (s) => s.trim(),
     )
-    expect(distances).toEqual([
-      '1200 m',
-      '1400 m',
-      '1600 m',
-      '1800 m',
-      '2000 m',
-      '2200 m',
-    ])
+    expect(distances).toEqual(ROUND_DISTANCES.map((d) => `${d} m`))
 
-    // Track now shows 10 lanes for the first round.
     await expect(page.locator(SELECTORS.trackPlaceholder)).toBeHidden()
-    await expect(page.locator(SELECTORS.lane)).toHaveCount(10)
-    await expect(page.locator(SELECTORS.trackTitle)).toContainText('Round 01')
-    await expect(page.locator(SELECTORS.trackTitle)).toContainText('1200 m')
+    await expect(page.locator(SELECTORS.lane)).toHaveCount(HORSES_PER_ROUND)
+    await expect(page.locator(SELECTORS.trackTitle)).toContainText(`Round ${FIRST_ROUND_LABEL}`)
+    await expect(page.locator(SELECTORS.trackTitle)).toContainText(FIRST_ROUND_DISTANCE_LABEL)
 
-    // Skip is still disabled in 'ready'; Start should be enabled.
     await expect(page.locator(SELECTORS.skip)).toBeDisabled()
     await expect(page.locator(SELECTORS.startResume)).toBeEnabled()
   })
 
-  test('completes all 6 rounds end-to-end and produces final standings', async ({ page }) => {
+  test('completes every round end-to-end and produces final standings', async ({ page }) => {
     await page.goto('/')
     await generateProgram(page)
 
-    // Start the championship.
     await page.locator(SELECTORS.startResume).click()
     await expect(page.locator(SELECTORS.pause)).toBeVisible()
 
-    // Skip through every round. After each skip the status enters 'between'
-    // for ~1.5s before auto-advancing — the next skip waits for re-enable.
-    for (let round = 1; round <= 6; round++) {
+    for (let round = 1; round <= TOTAL_ROUNDS; round++) {
       await skipNextRound(page)
       await waitForRoundCount(page, round)
 
-      if (round < 6) {
-        // Track header should advance to the next round once 'between' resolves.
+      if (round < TOTAL_ROUNDS) {
         await expect(page.locator(SELECTORS.trackTitle)).toContainText(
-          `Round ${String(round + 1).padStart(2, '0')}`,
-          { timeout: 5_000 },
+          `Round ${padRoundId(round + 1)}`,
+          { timeout: TRANSITION_TIMEOUT },
         )
       }
     }
 
-    // Championship complete.
-    await expect(page.locator(SELECTORS.resultCard)).toHaveCount(6)
+    await expect(page.locator(SELECTORS.resultCard)).toHaveCount(TOTAL_ROUNDS)
     await expect(page.locator(SELECTORS.championshipEyebrow)).toContainText('final')
 
-    // Standings list every horse and emphasises the top 3.
-    await expect(page.locator(SELECTORS.standingRow)).toHaveCount(20)
-    await expect(page.locator(SELECTORS.standingPodium)).toHaveCount(3)
+    await expect(page.locator(SELECTORS.standingRow)).toHaveCount(TOTAL_HORSES)
+    await expect(page.locator(SELECTORS.standingPodium)).toHaveCount(PODIUM_SIZE)
 
-    // Podium ranks read 1, 2, 3 (no ties expected with seeded fixtures —
-    // the assertion accepts either '1' or 'T1' style prefixes).
-    const podiumRanks = await page
-      .locator('.standing-row.podium .standing-rank')
-      .allTextContents()
+    const podiumRanks = await page.locator(SELECTORS.standingPodiumRank).allTextContents()
+    const expectedPodiumRanks = Array.from({ length: PODIUM_SIZE }, (_, i) => String(i + 1))
     const normalised = podiumRanks.map((r) => r.replace(/^T/, '').trim())
-    expect(normalised).toEqual(['1', '2', '3'])
+    expect(normalised).toEqual(expectedPodiumRanks)
 
-    // After finished, generate becomes available again, skip is locked out.
     await expect(page.locator(SELECTORS.generate)).toBeEnabled()
     await expect(page.locator(SELECTORS.skip)).toBeDisabled()
   })
@@ -135,18 +128,13 @@ test.describe('Furlong dashboard — full championship flow', () => {
     await generateProgram(page)
     await page.locator(SELECTORS.startResume).click()
 
-    // Pause appears once running.
     await expect(page.locator(SELECTORS.pause)).toBeVisible()
     await page.locator(SELECTORS.pause).click()
 
-    // Paused state: Start visible, Skip still enabled.
     await expect(page.locator(SELECTORS.startResume)).toBeVisible()
     await expect(page.locator(SELECTORS.skip)).toBeEnabled()
-
-    // Generate is locked while a round is in flight.
     await expect(page.locator(SELECTORS.generate)).toBeDisabled()
 
-    // Resume → Pause re-appears.
     await page.locator(SELECTORS.startResume).click()
     await expect(page.locator(SELECTORS.pause)).toBeVisible()
   })
@@ -156,21 +144,18 @@ test.describe('Furlong dashboard — full championship flow', () => {
     await generateProgram(page)
     await page.locator(SELECTORS.startResume).click()
 
-    // Round 1
     await skipNextRound(page)
     await waitForRoundCount(page, 1)
-    await expect(page.locator(SELECTORS.standingRow)).toHaveCount(20)
+    await expect(page.locator(SELECTORS.standingRow)).toHaveCount(TOTAL_HORSES)
     await expect(page.locator(SELECTORS.resultsEyebrow)).toContainText('1 settled')
 
-    // Round 2 — programme should mark round 1 as settled, round 2 as live.
-    await expect(page.locator(SELECTORS.skip)).toBeEnabled({ timeout: 5_000 })
     await skipNextRound(page)
     await waitForRoundCount(page, 2)
     await expect(page.locator(SELECTORS.resultsEyebrow)).toContainText('2 settled')
 
-    // The live row in the programme should be Round 03 once we advance.
-    await expect(page.locator(SELECTORS.programLiveRow)).toContainText('R03', {
-      timeout: 5_000,
+    const liveRoundLabel = `R${padRoundId(RACING_CONFIG.rounds[2]!.id)}`
+    await expect(page.locator(SELECTORS.programLiveRow)).toContainText(liveRoundLabel, {
+      timeout: TRANSITION_TIMEOUT,
     })
   })
 
@@ -181,20 +166,16 @@ test.describe('Furlong dashboard — full championship flow', () => {
     await skipNextRound(page)
     await waitForRoundCount(page, 1)
 
-    // Wait through all 6 rounds so the championship is finished and
-    // Generate becomes enabled again.
-    for (let round = 2; round <= 6; round++) {
-      await expect(page.locator(SELECTORS.skip)).toBeEnabled({ timeout: 5_000 })
+    for (let round = 2; round <= TOTAL_ROUNDS; round++) {
       await skipNextRound(page)
       await waitForRoundCount(page, round)
     }
 
-    // Regenerate.
     await expect(page.locator(SELECTORS.generate)).toBeEnabled()
     await page.locator(SELECTORS.generate).click()
 
-    await expect(page.locator(SELECTORS.programRow)).toHaveCount(6)
+    await expect(page.locator(SELECTORS.programRow)).toHaveCount(TOTAL_ROUNDS)
     await expect(page.locator(SELECTORS.resultCard)).toHaveCount(0)
-    await expect(page.locator(SELECTORS.trackTitle)).toContainText('Round 01')
+    await expect(page.locator(SELECTORS.trackTitle)).toContainText(`Round ${FIRST_ROUND_LABEL}`)
   })
 })

@@ -3,6 +3,7 @@ import { computed, watch } from 'vue'
 import { useRaceStore } from '@entities/race'
 import { useRaceEngine } from '@features/race-track'
 import { RACING_CONFIG } from '@shared/config'
+import { formatRaceTime, padRoundId, ticksToSeconds } from '@shared/lib/format'
 import HorseLane from './HorseLane.vue'
 
 const raceStore = useRaceStore()
@@ -29,15 +30,7 @@ watch(() => raceStore.status, (status) => {
 
 defineExpose({ skipRound: engine.skipRound })
 
-const elapsedSeconds = computed(
-  () => engine.tickCount.value * RACING_CONFIG.engine.tickIntervalMs / 1000,
-)
-
-function formatTime(t: number): string {
-  const m = Math.floor(t / 60)
-  const s = (t % 60).toFixed(2).padStart(5, '0')
-  return `${m}:${s}`
-}
+const elapsedSeconds = computed(() => ticksToSeconds(engine.tickCount.value))
 
 const totalRounds = RACING_CONFIG.rounds.length
 </script>
@@ -47,7 +40,7 @@ const totalRounds = RACING_CONFIG.rounds.length
     <div class="col-head">
       <div class="col-title">
         <template v-if="raceStore.currentRound">
-          Round {{ String(raceStore.currentRound.id).padStart(2, '0') }} —
+          Round {{ padRoundId(raceStore.currentRound.id) }} —
           {{ raceStore.currentRound.distance }} m
         </template>
         <template v-else>
@@ -90,10 +83,8 @@ const totalRounds = RACING_CONFIG.rounds.length
           Round
         </div>
         <div class="status-value">
-          {{ raceStore.currentRound
-            ? String(raceStore.currentRound.id).padStart(2, '0')
-            : '—' }}
-          <span class="of">/ {{ String(totalRounds).padStart(2, '0') }}</span>
+          {{ raceStore.currentRound ? padRoundId(raceStore.currentRound.id) : '—' }}
+          <span class="of">/ {{ padRoundId(totalRounds) }}</span>
         </div>
       </div>
       <div class="status-cell">
@@ -109,7 +100,7 @@ const totalRounds = RACING_CONFIG.rounds.length
           Elapsed
         </div>
         <div class="status-value mono accent">
-          {{ formatTime(elapsedSeconds) }}
+          {{ formatRaceTime(elapsedSeconds) }}
         </div>
       </div>
     </div>

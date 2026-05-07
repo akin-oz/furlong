@@ -76,14 +76,14 @@ export function useRaceEngine(options: UseRaceEngineOptions) {
       })
 
       const delta = speedToProgressDelta(newSpeed, distance.value)
-      const newProgress = Math.min(1, state.progress + delta)
+      const newProgress = Math.min(RACING_CONFIG.engine.maxProgress, state.progress + delta)
 
       state.speed = newSpeed
       state.anaerobicEnergy = newAnaerobicEnergy
       state.hasBursted = hasBursted
       state.progress = newProgress
 
-      if (newProgress >= 1) {
+      if (newProgress >= RACING_CONFIG.engine.maxProgress) {
         state.finishedAtTick = tickCount.value
         finishingOrder.push({
           position: finishingOrder.length + 1,
@@ -144,7 +144,7 @@ export function useRaceEngine(options: UseRaceEngineOptions) {
       if (allFinished) break
 
       // Safety guard against infinite loops if a horse stalls
-      if (tickCount.value > 50_000) break
+      if (tickCount.value > RACING_CONFIG.engine.skipSafetyTickLimit) break
     }
     emitRoundComplete()
   }

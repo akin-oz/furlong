@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Horse } from '@entities/horse'
+import { padLaneNumber } from '@shared/lib/format'
 
 interface Props {
   horse: Horse
@@ -13,7 +14,7 @@ defineProps<Props>()
 <template>
   <div class="lane">
     <div class="lane-num">
-      {{ String(laneNumber).padStart(2, '0') }}
+      {{ padLaneNumber(laneNumber) }}
     </div>
     <div class="lane-strip">
       <div class="lane-rule" />

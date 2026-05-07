@@ -1,16 +1,19 @@
 <script setup lang="ts">
 import { useRaceStore } from '@entities/race'
 import { RACING_CONFIG } from '@shared/config'
+import {
+  formatRaceTime,
+  padRoundId,
+  ticksToSeconds,
+} from '@shared/lib/format'
 
 const raceStore = useRaceStore()
 
-const POS_LABELS = ['1st', '2nd', '3rd'] as const
+const POS_LABELS = RACING_CONFIG.display.podiumLabels
+const PODIUM_SIZE = RACING_CONFIG.display.podiumSize
 
 function formatFinishTime(tick: number): string {
-  const seconds = (tick * RACING_CONFIG.engine.tickIntervalMs) / 1000
-  const m = Math.floor(seconds / 60)
-  const s = (seconds % 60).toFixed(2).padStart(5, '0')
-  return `${m}:${s}`
+  return formatRaceTime(ticksToSeconds(tick))
 }
 </script>
 
@@ -44,7 +47,7 @@ function formatFinishTime(tick: number): string {
         >
           <div class="res-head">
             <div class="res-title">
-              Round {{ String(result.roundId).padStart(2, '0') }} — {{ result.distance }} m
+              Round {{ padRoundId(result.roundId) }} — {{ result.distance }} m
             </div>
             <div class="res-meta">
               {{ formatFinishTime(result.positions[0]?.finishedAtTick ?? 0) }}
@@ -52,7 +55,7 @@ function formatFinishTime(tick: number): string {
           </div>
           <div class="podium">
             <div
-              v-for="(position, i) in result.positions.slice(0, 3)"
+              v-for="(position, i) in result.positions.slice(0, PODIUM_SIZE)"
               :key="position.horseId"
               class="podium-row"
               :class="`p${i + 1}`"

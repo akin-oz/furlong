@@ -31,7 +31,7 @@ export interface SeedOptions {
 
 export function seedStores(options: SeedOptions = {}): void {
   const {
-    rosterSize = 20,
+    rosterSize = RACING_CONFIG.horses.totalCount,
     withSchedule = false,
     completedRounds = 0,
     finalStatus,

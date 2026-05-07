@@ -68,6 +68,18 @@ export const RACING_CONFIG = {
     fatigueThreshold:    0.2,
     fatiguePenaltyFactor: 0.5,
     anaerobicTickCost:   0.02,
+
+    // Calibration — empirical constants tuning wall-clock pacing
+    referenceDistance:    1600,    // distances normalized against this
+    progressPerSpeedUnit: 0.0008,  // raw speed → per-tick progress delta
+
+    // Boundary values — game limits, not tunables but kept here for reuse
+    maxProgress:          1,    // finish-line progress
+    maxAnaerobicEnergy:   1,    // initial energy reserve
+    attributeScale:       100,  // attributes (condition/stamina/accel) ∈ [1, 100]
+
+    // Safety guard — caps synchronous skip-round loops
+    skipSafetyTickLimit:  50_000,
   },
 
   // ─── Round flow ──────────────────────────────────────────────
@@ -87,6 +99,31 @@ export const RACING_CONFIG = {
     distanceMultiplierThreshold: 1800,
     distanceMultiplierBoost: 2.0,
     distanceMultiplierBase: 1.0,
+  },
+
+  // ─── Display / presentation ──────────────────────────────────
+  // UI labels and category mappings derived from the game model.
+  display: {
+    podiumSize: 3,
+    podiumLabels: ['1st', '2nd', '3rd'] as const,
+
+    // Race-name categories — first matching `maxExclusive` wins.
+    distanceCategories: [
+      { maxExclusive: 1500,     label: 'Sprint'      },
+      { maxExclusive: 1900,     label: 'Mile'        },
+      { maxExclusive: Infinity, label: 'Long Course' },
+    ],
+  },
+
+  // ─── Formatting ──────────────────────────────────────────────
+  // String/number formatting widths used in the dashboard.
+  formatting: {
+    msPerSecond:        1000,
+    secondsPerMinute:   60,
+    timeFractionDigits: 2,   // m:ss.NN
+    timeSecondsPad:     5,   // "ss.NN" → 5 chars after padStart
+    roundIdPad:         2,   // "01" .. "06"
+    lanePad:            2,   // "01" .. "10"
   },
 } as const
 
