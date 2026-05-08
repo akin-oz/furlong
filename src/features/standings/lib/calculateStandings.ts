@@ -72,9 +72,11 @@ export function calculateStandings(
   })
 
   // Assign ranks with ties sharing the same number (1, 1, 3, 4, ...).
+  // The loop bounds guarantee every index access is defined, so the non-null
+  // assertions below are sound under `noUncheckedIndexedAccess`.
   const ranks: number[] = sorted.map((_, i) => i + 1)
   for (let i = 1; i < sorted.length; i++) {
-    if (entriesAreTied(sorted[i - 1], sorted[i])) {
+    if (entriesAreTied(sorted[i - 1]!, sorted[i]!)) {
       ranks[i] = ranks[i - 1]!
     }
   }
@@ -82,15 +84,18 @@ export function calculateStandings(
   const rankCounts = new Map<number, number>()
   for (const r of ranks) rankCounts.set(r, (rankCounts.get(r) ?? 0) + 1)
 
-  return sorted.map((agg, i) => ({
-    horse: agg.horse,
-    totalPoints: agg.totalPoints,
-    firsts: agg.firsts,
-    seconds: agg.seconds,
-    thirds: agg.thirds,
-    rank: ranks[i],
-    isTied: (rankCounts.get(ranks[i]) ?? 0) > 1,
-  }))
+  return sorted.map((agg, i) => {
+    const rank = ranks[i]!
+    return {
+      horse: agg.horse,
+      totalPoints: agg.totalPoints,
+      firsts: agg.firsts,
+      seconds: agg.seconds,
+      thirds: agg.thirds,
+      rank,
+      isTied: (rankCounts.get(rank) ?? 0) > 1,
+    }
+  })
 }
 
 function entriesAreTied(a: Aggregate, b: Aggregate): boolean {
