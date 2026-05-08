@@ -19,6 +19,10 @@ An interactive horse racing game built for the Insider One Senior Frontend case 
 [![Chromatic](https://github.com/akin-oz/furlong/actions/workflows/chromatic.yml/badge.svg)](https://github.com/akin-oz/furlong/actions/workflows/chromatic.yml)
 [![codecov](https://codecov.io/gh/akin-oz/furlong/graph/badge.svg)](https://codecov.io/gh/akin-oz/furlong)
 
+![Furlong dashboard during round 4 of 6, showing the race track mid-stride and the first three rounds settled in the results panel](./docs/screenshot.png)
+
+> The championship leaderboard ranks all 20 horses by points across the 6-round series. It's not in this frame — try the [live demo](https://furlong.akinoztorun.dev) or scroll the right column. See [ADR 0011](./docs/adr/0011-overall-champion-determination.md) for the points formula.
+
 ## A 5-minute review
 
 If you only have a few minutes, here is the recommended path through the codebase:
