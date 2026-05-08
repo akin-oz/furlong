@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useHorseStore } from '@entities/horse'
+import { COPY } from '@shared/config'
 
 const horseStore = useHorseStore()
 </script>
@@ -8,20 +9,20 @@ const horseStore = useHorseStore()
   <section class="col">
     <div class="col-head">
       <div class="col-title">
-        Stable
+        {{ COPY.panels.stable }}
       </div>
       <div class="col-eyebrow">
-        01 — {{ horseStore.horses.length }} horses
+        {{ COPY.eyebrows.stableCount(horseStore.horses.length) }}
       </div>
     </div>
 
     <div class="roster-table">
       <div class="roster-head">
-        <span>Name</span>
-        <span class="num">Age</span>
-        <span class="num">Cond.</span>
-        <span class="num">Stam.</span>
-        <span class="num">Accl.</span>
+        <span>{{ COPY.roster.name }}</span>
+        <span class="num">{{ COPY.roster.age }}</span>
+        <span class="num">{{ COPY.roster.condition }}</span>
+        <span class="num">{{ COPY.roster.stamina }}</span>
+        <span class="num">{{ COPY.roster.acceleration }}</span>
         <span />
       </div>
       <div class="roster-body">

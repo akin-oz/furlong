@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRaceStore } from '@entities/race'
-import { RACING_CONFIG } from '@shared/config'
+import { COPY, RACING_CONFIG } from '@shared/config'
 import {
   formatRaceTime,
   padRoundId,
@@ -21,17 +21,17 @@ function formatFinishTime(tick: number): string {
   <section class="col">
     <div class="col-head">
       <div class="col-title">
-        Results
+        {{ COPY.panels.results }}
       </div>
       <div class="col-eyebrow">
-        04 — {{ raceStore.results.length }} settled
+        {{ COPY.eyebrows.resultsSettled(raceStore.results.length) }}
       </div>
     </div>
 
     <div class="res-list">
       <template v-if="raceStore.results.length === 0">
         <div class="res-empty">
-          No rounds completed yet.
+          {{ COPY.empty.results }}
         </div>
       </template>
 
@@ -47,7 +47,7 @@ function formatFinishTime(tick: number): string {
         >
           <div class="res-head">
             <div class="res-title">
-              Round {{ padRoundId(result.roundId) }} — {{ result.distance }} m
+              {{ COPY.results.cardTitle(padRoundId(result.roundId), result.distance) }}
             </div>
             <div class="res-meta">
               {{ formatFinishTime(result.positions[0]?.finishedAtTick ?? 0) }}

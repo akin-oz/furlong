@@ -2,7 +2,7 @@
 import { computed, watch } from 'vue'
 import { useRaceStore } from '@entities/race'
 import { useRaceEngine } from '@features/race-track'
-import { RACING_CONFIG } from '@shared/config'
+import { COPY, RACING_CONFIG } from '@shared/config'
 import { formatRaceTime, padRoundId, ticksToSeconds } from '@shared/lib/format'
 import HorseLane from './HorseLane.vue'
 
@@ -40,15 +40,16 @@ const totalRounds = RACING_CONFIG.rounds.length
     <div class="col-head">
       <div class="col-title">
         <template v-if="raceStore.currentRound">
-          Round {{ padRoundId(raceStore.currentRound.id) }} —
-          {{ raceStore.currentRound.distance }} m
+          {{ COPY.track.roundTitle(padRoundId(raceStore.currentRound.id), raceStore.currentRound.distance) }}
         </template>
         <template v-else>
-          Awaiting program
+          {{ COPY.empty.trackAwaiting }}
         </template>
       </div>
       <div class="col-eyebrow">
-        02 — {{ raceStore.status === 'running' ? 'Live' : raceStore.status }}
+        {{ raceStore.status === 'running'
+          ? COPY.eyebrows.trackLive
+          : COPY.eyebrows.trackStatus(raceStore.status) }}
       </div>
     </div>
 
@@ -67,37 +68,37 @@ const totalRounds = RACING_CONFIG.rounds.length
       </div>
       <div class="finish" />
       <div class="finish-label">
-        FINISH
+        {{ COPY.track.finishLabel }}
       </div>
     </div>
     <div
       v-else
       class="track-placeholder"
     >
-      Generate a program to begin.
+      {{ COPY.empty.track }}
     </div>
 
     <div class="statusbar">
       <div class="status-cell">
         <div class="status-label">
-          Round
+          {{ COPY.track.statusRound }}
         </div>
         <div class="status-value">
-          {{ raceStore.currentRound ? padRoundId(raceStore.currentRound.id) : '—' }}
+          {{ raceStore.currentRound ? padRoundId(raceStore.currentRound.id) : COPY.empty.finishesDash }}
           <span class="of">/ {{ padRoundId(totalRounds) }}</span>
         </div>
       </div>
       <div class="status-cell">
         <div class="status-label">
-          Distance
+          {{ COPY.track.statusDistance }}
         </div>
         <div class="status-value">
-          {{ raceStore.currentRound ? `${raceStore.currentRound.distance} m` : '—' }}
+          {{ raceStore.currentRound ? `${raceStore.currentRound.distance} m` : COPY.empty.finishesDash }}
         </div>
       </div>
       <div class="status-cell right">
         <div class="status-label">
-          Elapsed
+          {{ COPY.track.statusElapsed }}
         </div>
         <div class="status-value mono accent">
           {{ formatRaceTime(elapsedSeconds) }}

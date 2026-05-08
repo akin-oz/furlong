@@ -7,6 +7,7 @@ import { ProgramPanel, buildSchedule } from '@features/race-schedule'
 import { RaceTrack } from '@features/race-track'
 import { ResultsPanel } from '@features/results'
 import { StandingsPanel } from '@features/standings'
+import { COPY } from '@shared/config'
 
 const horseStore = useHorseStore()
 const raceStore = useRaceStore()
@@ -33,7 +34,7 @@ function onSkip() {
   <div class="app">
     <header class="topbar">
       <div class="brand">
-        Furlong
+        {{ COPY.app.title }}
       </div>
 
       <div class="actions">
@@ -42,21 +43,21 @@ function onSkip() {
           :disabled="!raceStore.canGenerate"
           @click="onGenerate"
         >
-          Generate Program
+          {{ COPY.actions.generate }}
         </button>
         <button
           class="btn"
           :disabled="!raceStore.canSkip"
           @click="onSkip"
         >
-          Skip Round
+          {{ COPY.actions.skip }}
         </button>
         <button
           class="btn btn-primary"
           :disabled="!(raceStore.canStart || raceStore.canPause)"
           @click="onStartPause"
         >
-          {{ raceStore.status === 'running' ? 'Pause' : 'Start' }} / Resume
+          {{ raceStore.status === 'running' ? COPY.actions.pause : COPY.actions.startOrResume }}
         </button>
       </div>
     </header>

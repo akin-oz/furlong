@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { useHorseStore } from '@entities/horse'
 import { useRaceStore } from '@entities/race'
-import { RACING_CONFIG } from '@shared/config'
+import { COPY, RACING_CONFIG } from '@shared/config'
 import { calculateStandings } from '@features/standings'
 
 const horseStore = useHorseStore()
@@ -22,9 +22,9 @@ const isChampionship = computed(
 
 const eyebrow = computed(() => {
   const n = raceStore.results.length
-  if (n === 0) return '05 — championship'
-  if (isChampionship.value) return '05 — final'
-  return `05 — after round ${n} of ${totalRounds}`
+  if (n === 0) return COPY.eyebrows.standingsBeforeRun
+  if (isChampionship.value) return COPY.eyebrows.standingsFinal
+  return COPY.eyebrows.standingsAfter(n, totalRounds)
 })
 
 function formatPoints(points: number): string {
@@ -37,10 +37,10 @@ function formatPoints(points: number): string {
     <div class="col-head">
       <div>
         <div class="col-title">
-          Championship
+          {{ COPY.panels.standings }}
         </div>
         <div class="col-caption">
-          Points across all rounds. Long races (≥ 1800 m) count double.
+          {{ COPY.panels.standingsCaption }}
         </div>
       </div>
       <div class="col-eyebrow">
@@ -50,18 +50,17 @@ function formatPoints(points: number): string {
 
     <template v-if="raceStore.results.length === 0">
       <div class="res-empty">
-        Standings appear after the first round.
-        Each finish earns points (1st = 10, last = 1); long races double the score.
+        {{ COPY.empty.standings }}
       </div>
     </template>
 
     <template v-else>
       <div class="standings-head">
-        <span>Rank</span>
+        <span>{{ COPY.standings.rank }}</span>
         <span />
-        <span>Horse</span>
-        <span class="standings-head-finishes">Top {{ podiumSize }} finishes</span>
-        <span class="num">Pts</span>
+        <span>{{ COPY.standings.horse }}</span>
+        <span class="standings-head-finishes">{{ COPY.standings.topFinishes(podiumSize) }}</span>
+        <span class="num">{{ COPY.standings.points }}</span>
       </div>
 
       <div class="standings-list">
@@ -88,27 +87,27 @@ function formatPoints(points: number): string {
             <span class="standing-name ellip">{{ entry.horse.name }}</span>
             <span class="standing-finishes">
               <template v-if="entry.firsts + entry.seconds + entry.thirds === 0">
-                <span class="standing-finishes-empty">—</span>
+                <span class="standing-finishes-empty">{{ COPY.empty.finishesDash }}</span>
               </template>
               <template v-else>
                 <span
                   v-if="entry.firsts > 0"
                   class="finish-chip gold"
-                  :title="`Won ${entry.firsts} race${entry.firsts === 1 ? '' : 's'}`"
+                  :title="COPY.standings.winsTooltip(entry.firsts)"
                 >
                   {{ entry.firsts }}× {{ podiumLabels[0] }}
                 </span>
                 <span
                   v-if="entry.seconds > 0"
                   class="finish-chip silver"
-                  :title="`Finished ${podiumLabels[1]} in ${entry.seconds} race${entry.seconds === 1 ? '' : 's'}`"
+                  :title="COPY.standings.finishesTooltip(entry.seconds, podiumLabels[1])"
                 >
                   {{ entry.seconds }}× {{ podiumLabels[1] }}
                 </span>
                 <span
                   v-if="entry.thirds > 0"
                   class="finish-chip bronze"
-                  :title="`Finished ${podiumLabels[2]} in ${entry.thirds} race${entry.thirds === 1 ? '' : 's'}`"
+                  :title="COPY.standings.finishesTooltip(entry.thirds, podiumLabels[2])"
                 >
                   {{ entry.thirds }}× {{ podiumLabels[2] }}
                 </span>

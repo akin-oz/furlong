@@ -1,25 +1,34 @@
 <script setup lang="ts">
 import { useRaceStore } from '@entities/race'
+import { COPY } from '@shared/config'
 import { categorizeDistance, padRoundId } from '@shared/lib/format'
 
 const raceStore = useRaceStore()
+
+function isLiveRow(index: number): boolean {
+  return (
+    index === raceStore.currentRoundIndex &&
+    raceStore.status !== 'idle' &&
+    raceStore.status !== 'finished'
+  )
+}
 </script>
 
 <template>
   <section class="col">
     <div class="col-head">
       <div class="col-title">
-        Programme
+        {{ COPY.panels.programme }}
       </div>
       <div class="col-eyebrow">
-        03
+        {{ COPY.eyebrows.programme }}
       </div>
     </div>
 
     <div class="prog-list">
       <template v-if="raceStore.schedule.length === 0">
         <div class="res-empty">
-          No programme generated.
+          {{ COPY.empty.program }}
         </div>
       </template>
 
@@ -30,17 +39,17 @@ const raceStore = useRaceStore()
           class="prog-row"
           :class="{
             done: i < raceStore.currentRoundIndex,
-            live: i === raceStore.currentRoundIndex && raceStore.status !== 'idle' && raceStore.status !== 'finished',
+            live: isLiveRow(i),
           }"
         >
           <div class="prog-idx">
-            R{{ padRoundId(round.id) }}
+            {{ COPY.programme.rowPrefix(padRoundId(round.id)) }}
           </div>
           <div class="prog-name">
-            {{ categorizeDistance(round.distance) }}<template v-if="i === raceStore.currentRoundIndex && raceStore.status !== 'idle' && raceStore.status !== 'finished'">
-              · Active
+            {{ categorizeDistance(round.distance) }}<template v-if="isLiveRow(i)">
+              {{ COPY.programme.activeSuffix }}
             </template><template v-else-if="i < raceStore.currentRoundIndex">
-              · Settled
+              {{ COPY.programme.settledSuffix }}
             </template>
           </div>
           <div class="prog-dist">
