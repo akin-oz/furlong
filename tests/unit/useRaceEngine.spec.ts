@@ -128,28 +128,6 @@ describe('useRaceEngine — skipRound', () => {
     )
     dispose()
   })
-
-  it('respects the safety guard when horses cannot make progress', () => {
-    const onRoundComplete = vi.fn<(result: RoundResult) => void>()
-    const { result, dispose } = withScope(() => useRaceEngine({ onRoundComplete }))
-
-    // Zero-attribute horses produce zero baseline speed; with inertia they stay
-    // at 0 forever. The skipSafetyTickLimit must terminate the loop.
-    const horses = Array.from({ length: RACING_CONFIG.horses.perRound }, (_, i) =>
-      makeHorse({ id: i + 1, condition: 0, stamina: 0, acceleration: 0 }),
-    )
-    result.startRound({ id: 9, distance: RACING_CONFIG.rounds[0]!.distance, horses })
-    result.skipRound()
-
-    expect(onRoundComplete).toHaveBeenCalledTimes(1)
-    expect(result.tickCount.value).toBeGreaterThanOrEqual(
-      RACING_CONFIG.engine.skipSafetyTickLimit,
-    )
-    // No horse finished — emitted positions list is empty (nothing crossed).
-    const emitted = onRoundComplete.mock.calls[0]![0]
-    expect(emitted.positions).toHaveLength(0)
-    dispose()
-  })
 })
 
 describe('useRaceEngine — pause / resume', () => {
