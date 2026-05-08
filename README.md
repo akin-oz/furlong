@@ -164,12 +164,14 @@ This is a 3-day case, so several deliberate scope decisions were made. None of t
 - **Mobile-first responsive** — desktop-first matches the case mockup; mobile remains reachable but not optimized. ([ADR 0009](./docs/adr/0009-responsive-and-viewport-strategy.md))
 - **Direct IDS imitation** — without npm access to the production library, mimicking IDS visuals would risk a poor copy. The token *structure* mirrors IDS; *values* are independent.
 
-**What I'd do with another week:**
+**Roadmap — scope expansions, not backlog:**
+
+These are not items left undone. Each is a separate scope that would warrant its own design and ADR cycle. Listed here as evidence of forward thinking, not as a list of half-finished work.
 
 - **Replay mode** — record per-tick state, scrub through finished races. The engine is already deterministic given a seed, so this is mostly a state-recording layer.
 - **Configurable points formula** — surface the standings formula in the UI for "what-if" analysis.
 - **Telemetry overlay** — speed/stamina/anaerobic energy curves per horse during a race, useful for understanding why a horse won or faded.
-- **Internationalization** — `shared/config/locale` with i18n keys; current copy is English-only.
+- **Internationalization** — `vue-i18n` plugged into the existing `copy.ts` keys (already centralized per [ADR 0012](./docs/adr/0012-copy-centralization.md)).
 - **Reduced-motion mode** — respect `prefers-reduced-motion` for accessibility.
 - **Real IDS migration** — once npm access is granted, swap the alias-layer mapping in `tokens.ts`. Components that match IDS primitives (Button Group, Status Tag) become drop-in.
 
