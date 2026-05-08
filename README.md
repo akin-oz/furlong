@@ -45,18 +45,19 @@ This structure is **micro-frontend ready**: each feature has a public `index.ts`
 
 All architectural decisions are recorded as ADRs in [`docs/adr/`](./docs/adr/):
 
-| #    | Decision                                               |
-|------|--------------------------------------------------------|
-| 0001 | Feature-Sliced Design with enforced boundaries        |
+| #    | Decision                                             |
+|------|------------------------------------------------------|
+| 0001 | Feature-Sliced Design with enforced boundaries       |
 | 0002 | Pinia stores live in entities, not features          |
 | 0003 | Race engine physiology (condition + stamina + accel) |
 | 0004 | useRafFn + CSS transition for animation              |
-| 0005 | No third-party animation library                    |
+| 0005 | No third-party animation library                     |
 | 0006 | Config-driven tunables in `shared/config`            |
 | 0007 | 6-state machine for race flow                        |
 | 0008 | Skip Round (no Skip All); pause works in any state   |
 | 0009 | Desktop-first, mobile reachable                      |
 | 0010 | Two-tier test strategy (case rules + quality)        |
+ | 0011 | Overall champion via points-based standings          |
 
 ## Race engine — physiology model
 
@@ -118,3 +119,11 @@ Two domain questions were sent before starting implementation; default assumptio
 2. **Generate Program re-click**: same horses with new schedule (current default), or regenerate horses too?
 
 If the answers differ from defaults, the changes are localized to `buildSchedule.ts` and `GameLayout.vue` respectively.
+
+## A note on the championship
+
+The case brief is silent on whether to declare an overall winner across the
+6-round series. Adding this felt like an obvious user expectation ("who won
+the day?"), so a points-based standings panel was added with a clearly
+documented formula. See ADR 0011 for the rationale and alternatives. If the
+case author intended individual rounds only, the panel is easy to remove.
