@@ -57,7 +57,8 @@ All architectural decisions are recorded as ADRs in [`docs/adr/`](./docs/adr/):
 | 0008 | Skip Round (no Skip All); pause works in any state   |
 | 0009 | Desktop-first, mobile reachable                      |
 | 0010 | Two-tier test strategy (case rules + quality)        |
- | 0011 | Overall champion via points-based standings          |
+| 0011 | Overall champion via points-based standings          |
+| 0012 | Copy centralization in `shared/config/copy.ts`       |
 
 ## Race engine — physiology model
 
